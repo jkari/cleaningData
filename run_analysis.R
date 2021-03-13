@@ -19,13 +19,17 @@ unzip('./data/dataset.zip', exdir='./data')
 # Read measurements to memory
 train_x <- read.csv(paste0(work_dir, 'train/X_train.txt'), header=F, sep='')
 train_y <- read.csv(paste0(work_dir, 'train/y_train.txt'), header=F, sep='')
+train_subject <- read.csv(paste0(work_dir, 'train/subject_train.txt'), header=F, sep='')
 test_x <- read.csv(paste0(work_dir, 'test/X_test.txt'), header=F, sep='')
 test_y <- read.csv(paste0(work_dir, 'test/y_test.txt'), header=F, sep='')
+test_subject <- read.csv(paste0(work_dir, 'test/subject_test.txt'), header=F, sep='')
 
 # Combine training set and test set
 full_x <- rbind(train_x, test_x)
 full_y <- rbind(train_y, test_y)
+full_subject <- rbind(train_subject, test_subject)
 names(full_y) <- c('activity')
+names(full_subject) <- c('subject')
 
 # Parse features
 features = read.csv(paste0(work_dir, 'features.txt'), header=F, sep=' ')
@@ -48,14 +52,15 @@ names(activities) <- c('id', 'name')
 full_y$activity <- as.factor(full_y$activity)
 levels(full_y$activity) <- activities$name
 
-# Add activity type to dataset
+# Add activity type and subject to dataset
 full <- cbind(full_y, full_x)
+full <- cbind(full_subject, full)
 
 # Melt columns to a factor
-full_tidy <- melt(full, id.vars=c('activity'))
+full_tidy <- melt(full, id.vars=c('activity', 'subject'))
 full_tidy <- full_tidy %>% rename('measurement'='variable')
 
-# Calculate averages for each activity/measurement type
+# Calculate averages for each activity/subject/measurement type
 summary <- full_tidy %>%
-  group_by(activity, measurement) %>%
+  group_by(subject, activity, measurement) %>%
   summarise(average=mean(value))

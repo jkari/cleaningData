@@ -14,7 +14,7 @@ if (!file.exists('./data/dataset.zip')) {
 
 work_dir <- './data/UCI HAR Dataset/'
 
-#unzip('./data/dataset.zip', exdir='./data')
+unzip('./data/dataset.zip', exdir='./data')
 
 # Read measurements to memory
 train_x <- read.csv(paste0(work_dir, 'train/X_train.txt'), header=F, sep='')
